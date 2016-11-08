@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/fl_main_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <RadioGroup
+        android:id="@+id/rg_main_tab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <RadioButton
+            android:id="@+id/rb_conf_call"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:text="conf call"
+            android:textSize="15sp"
+
+            android:button="@null"
+            android:gravity="center"
+            android:background="@android:color/holo_blue_light"
+            android:textColor="@color/main_tab_text_selector"
+            />
+
+        <RadioButton
+            android:id="@+id/rb_p2p_call"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:text="p2p call"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:button="@null"
+            android:background="@android:color/holo_blue_light"
+            android:textColor="@color/main_tab_text_selector"
+            />
+
+        <RadioButton
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:text="settings"
+            android:button="@null"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:id="@+id/rb_setting"
+            android:background="@android:color/holo_blue_light"
+            android:textColor="@color/main_tab_text_selector"
+            />
+
+    </RadioGroup>
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerInParent="true"-->
+        <!--android:gravity="center">-->
+
+        <!--<Button-->
+            <!--android:layout_margin="20dp"-->
+            <!--android:padding="10dp"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="conf call"-->
+            <!--/>-->
+
+        <!--<Button-->
+            <!--android:layout_margin="20dp"-->
+            <!--android:padding="10dp"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="p2p call"-->
+            <!--/>-->
+    <!--</LinearLayout>-->
+</LinearLayout>

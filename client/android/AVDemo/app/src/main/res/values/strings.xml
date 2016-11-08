@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AVDemo</string>
+    <string name="string_bt_login">login</string>
+    <string name="string_bt_register">register</string>
+</resources>
