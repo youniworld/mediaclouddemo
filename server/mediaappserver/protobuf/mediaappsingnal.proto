@@ -1,0 +1,83 @@
+message MediaAppSignalMessage{
+	message MediaMessageBase{
+		required uint64 _packetId = 1;
+	}
+	
+	optional MediaSignalMessage _signal = 1;
+	optional MediaCallMessage _call = 2;
+	optional MediaMessageBase _base = 3;
+}
+
+message MediaSignalMessage{
+	message Login{
+		required string _uid = 1;
+		required string _pwd = 2;
+		required string _portal = 3;
+	}
+	
+	message LoginResp{
+		required string _token = 1;
+		required uint32 _code = 2;
+		required string _failed_reason = 3; 
+	}
+	
+	message Logout{
+		optional string _uid = 1;
+		
+	}
+	
+	message OnlineStateChange{
+		required string _uid = 1;
+		required uint32 _state = 2;
+	}
+	
+	message ping{
+	}
+	
+	message pong{
+	}
+	
+	optional Login _login = 1;
+	optional Logout _logout = 2;
+	optional OnlineStateChange _stateChanged = 3;
+	optional ping _ping = 4;
+	optional pong _pong = 5;
+	optional LoginResp _loginResp = 6;
+	
+}
+
+message MediaCallMessage{
+	message BaseMesssage{
+		required string _from = 1;
+		required string _to = 2;
+		required string _portal = 3;
+	}
+	
+	message CallInitiate{
+		required string _callid = 1;
+		required string _caller = 2;
+		required string _media_session = 3;
+	}
+	
+	message CallAccept{
+		required string _callid = 1;
+		required string _callee = 2;
+	}
+	
+	message CallTerminate{
+		required string _callid = 1;
+		required uint32 _reason = 2;
+	}
+	
+	message CallInvite{
+		required string _callid = 1;
+		required string _media_session = 2;
+	}
+	
+	required BaseMesssage _base = 1;
+	optional CallInitiate _call_initiate = 2;
+	optional CallAccept _call_accept = 3;
+	optional CallTerminate _call_terminate = 4;
+	optional CallInvite _call_invite = 5;
+	
+}
