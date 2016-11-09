@@ -221,6 +221,14 @@ public class MediaCallManager {
             _activeSession.rejectCall();
         }
     }
+
+    public String getMediaSessionId(){
+        if (_activeSession == null){
+            return null;
+        }
+
+        return _activeSession.get_sessionId();
+    }
 }
 
 abstract class MediaCallSessionBase{

@@ -1,7 +1,11 @@
 package app.mediacloud.com.avdemo;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -148,6 +152,17 @@ public class AppModel {
         });
 
         _client.addMessageListener(_messageListener);
+
+        MediaCallManager.getInstance().init(context,_client);
+
+        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(context);
+
+        lbm.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                
+            }
+        },new IntentFilter(MediaCallManager.INCOMING_CALL_ACTION));
     }
 
     public ErrorCode Register(String uid, String pwd, String portal) {
