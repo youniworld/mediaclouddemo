@@ -106,7 +106,7 @@ class TCPClient implements OnProtocolMessageListener{
             throw new RuntimeException("illegal connection state");
         }
 
-        _messageQueue.add(message);
+        _messageQueue.offer(message);
     }
 
     public void connect(String addr) throws Exception{

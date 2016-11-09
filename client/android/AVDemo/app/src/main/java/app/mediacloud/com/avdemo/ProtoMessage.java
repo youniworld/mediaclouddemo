@@ -322,7 +322,11 @@ class ProtocolParser{
 
                 }
             }else if(message.hasCall()){
+                CallProto call = new CallProto();
 
+                call.Unmarsal(message);
+
+                protocols.add(call);
             }
         }
 

@@ -10,7 +10,7 @@ import android.widget.Button;
  * Created by youni on 2016/11/9.
  */
 
-public class ActivityIncomingCall extends Activity {
+public class ActivityIncomingCall extends ActivityCallBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

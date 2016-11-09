@@ -1,5 +1,6 @@
 package app.mediacloud.com.avdemo;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -90,8 +91,8 @@ public class FragmentP2P extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 People people = (People) adapterView.getAdapter().getItem(i);
 
-                Intent intent = new Intent(getActivity(),ActivityMedia.class);
-                intent.putExtra("uid",people.get_uid());
+                Intent intent = new Intent(getActivity(),ActivityDialCall.class);
+                intent.putExtra("to",people.get_uid());
 
                 getActivity().startActivity(intent);
 

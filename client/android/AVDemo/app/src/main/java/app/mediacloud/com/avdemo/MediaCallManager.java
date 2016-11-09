@@ -153,11 +153,11 @@ public class MediaCallManager {
         _state = state;
 
         if (_state == CallState.EHangup || _state == CallState.EReject){
-            try {
-                _activeSession.hangupCall();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            try {
+//                _activeSession.hangupCall();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
             _activeSession = null;
             _state = CallState.EInit;
         } else if (_state == CallState.ERinging){
@@ -198,8 +198,8 @@ public class MediaCallManager {
         _activeSession.set_caller(AppModel.getInstance().getUid());
         _activeSession.set_callee(to);
         _activeSession.set_client(_client);
-        _activeSession.makeCall(to);
         _activeSession.set_callManager(this);
+        _activeSession.makeCall(to);
     }
 
     public void answerCall() throws Exception{
@@ -238,6 +238,8 @@ abstract class MediaCallSessionBase{
     protected TCPClient _client;
     protected MediaCallManager _callManager;
     protected MediaCallManager.CallState _state;
+    protected String _from;
+    protected String _to;
 
     protected MediaCallSessionBase(String sessionId){
         _sessionId = sessionId;
@@ -290,19 +292,20 @@ abstract class MediaCallSessionBase{
         callMessage.set_sessionId(_sessionId);
         callMessage.set_caller(_caller);
         callMessage.set_callee(_callee);
+        callMessage.set_portal(AppModel.getInstance().getPortal());
         callMessage.set_callCmd(MediaCallMessage.CallCmd.ECallTerminate);
         callMessage.set_reason(MediaCallMessage.CallHangupReason.ECallNormal);
 
         CallProto proto = new CallProto();
         proto.set_message(callMessage);
-        proto.set_from(AppModel.getInstance().getUid());
-        proto.set_to(_caller);
-
-        _client.send(proto);
+        proto.set_from(_from);
+        proto.set_to(_to);
 
         _state = MediaCallManager.CallState.EHangup;
 
         _callManager.noitfyStateChanged(_state);
+
+        _client.send(proto);
     }
 
     public void rejectCall() throws Exception{
@@ -310,19 +313,20 @@ abstract class MediaCallSessionBase{
         callMessage.set_sessionId(_sessionId);
         callMessage.set_caller(_caller);
         callMessage.set_callee(_callee);
+        callMessage.set_portal(AppModel.getInstance().getPortal());
         callMessage.set_callCmd(MediaCallMessage.CallCmd.ECallTerminate);
         callMessage.set_reason(MediaCallMessage.CallHangupReason.ECallBusy);
 
         CallProto proto = new CallProto();
         proto.set_message(callMessage);
-        proto.set_from(AppModel.getInstance().getUid());
-        proto.set_to(_caller);
-
-        _client.send(proto);
+        proto.set_from(_from);
+        proto.set_to(_to);
 
         _state = MediaCallManager.CallState.EHangup;
 
         _callManager.noitfyStateChanged(_state);
+
+        _client.send(proto);
     }
 
     abstract void makeCall(String to) throws Exception;
@@ -346,12 +350,16 @@ class MediaReceiveCallSession extends MediaCallSessionBase{
         callMessage.set_sessionId(_sessionId);
         callMessage.set_caller(_caller);
         callMessage.set_callee(_callee);
+        callMessage.set_portal(AppModel.getInstance().getPortal());
         callMessage.set_callCmd(MediaCallMessage.CallCmd.ECallAccepted);
+
+        _from = AppModel.getInstance().getUid();
+        _to = _caller;
 
         CallProto proto = new CallProto();
         proto.set_message(callMessage);
-        proto.set_from(AppModel.getInstance().getUid());
-        proto.set_to(_caller);
+        proto.set_from(_from);
+        proto.set_to(_to);
 
         _client.send(proto);
 
@@ -377,12 +385,16 @@ class MediaSendCallSession extends MediaCallSessionBase{
         callMessage.set_sessionId(_sessionId);
         callMessage.set_caller(_caller);
         callMessage.set_callee(_callee);
+        callMessage.set_portal(AppModel.getInstance().getPortal());
         callMessage.set_callCmd(MediaCallMessage.CallCmd.ECallInitiate);
+
+        _from = AppModel.getInstance().getUid();
+        _to = to;
 
         CallProto proto = new CallProto();
         proto.set_message(callMessage);
         proto.set_from(AppModel.getInstance().getUid());
-        proto.set_to(to);
+        proto.set_to(_to);
 
         _client.send(proto);
 

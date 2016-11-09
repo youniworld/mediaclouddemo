@@ -13,7 +13,7 @@ import com.vlee78.android.media.MediaView;
  * Created by youni on 2016/11/9.
  */
 
-public class ActivityAcceptCall extends Activity{
+public class ActivityAcceptCall extends ActivityCallBase{
     private String _mediaSessionId;
     private String _url;
     @Override
@@ -26,6 +26,7 @@ public class ActivityAcceptCall extends Activity{
             Log.e("call","no _media session id found!!");
 
             finish();
+            return;
         }
 
         setContentView(R.layout.activity_accept_call);
