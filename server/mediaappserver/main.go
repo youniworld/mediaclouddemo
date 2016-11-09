@@ -16,6 +16,7 @@ func main() {
 		}
 	}
 
+	_fLogger.init("mediaappserver.log")
 	server := &Server{}
 
 	Log("try to start the server ... ")

@@ -34,6 +34,7 @@ func (this *Server) start() {
 	go _MediaAppServerClient.Start("lianmaibiz.hifun.mobi:5000")
 	go _SessionServ.Start("0.0.0.0:9300")
 
+	// _DBMgr.Open("appserver", "bizuser", "Biz123456", "rm-bp1gp1fz524p949gs.mysql.rds.aliyuncs.com:3306")
 	_DBMgr.Open("appserver", "root", "1234", "localhost:3307")
 	_Cache.init()
 	_SessionMgr.init()

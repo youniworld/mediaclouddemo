@@ -10,9 +10,15 @@ import (
 type ISessionProto interface {
 	FromBuff(buff []byte)
 	ToBuff() []byte
+	ProtoBuf() *MediaAppSignalMessage
+}
+
+type ProtBase struct {
+	_proto *MediaAppSignalMessage
 }
 
 type LoginProto struct {
+	ProtBase
 	_user     string
 	_pwd      string
 	_token    string
@@ -38,6 +44,8 @@ func (this *LoginProto) ToBuff() []byte {
 	message.XBase = &MediaAppSignalMessage_MediaMessageBase{}
 	message.XBase.XPacketId = &this._packetId
 
+	this._proto = message
+
 	if !this._success {
 		state = 1
 		message.XSignal.XLoginResp.XCode = &state
@@ -50,19 +58,28 @@ func (this *LoginProto) ToBuff() []byte {
 	return buff
 }
 
+func (this *LoginProto) ProtoBuf() *MediaAppSignalMessage {
+	return this._proto
+}
+
 type LogoutProto struct {
+	ProtBase
 	_user string
 }
 
 func (this *LogoutProto) FromBuff(buff []byte) {
-
 }
 
 func (this *LogoutProto) ToBuff() []byte {
 	return nil
 }
 
+func (this *LogoutProto) ProtoBuf() *MediaAppSignalMessage {
+	return this._proto
+}
+
 type StateProto struct {
+	ProtBase
 	_user  string
 	_state uint8
 }
@@ -84,12 +101,18 @@ func (this *StateProto) ToBuff() []byte {
 
 	message.XSignal.XStateChanged.XState = &state
 
+	this._proto = message
 	buff, _ := proto.Marshal(message)
 
 	return buff
 }
 
+func (this *StateProto) ProtoBuf() *MediaAppSignalMessage {
+	return this._proto
+}
+
 type PingProto struct {
+	ProtBase
 	_packetId uint64
 }
 
@@ -104,13 +127,18 @@ func (this *PingProto) ToBuff() []byte {
 	message.XBase = &MediaAppSignalMessage_MediaMessageBase{}
 	message.XBase.XPacketId = &this._packetId
 
+	this._proto = message
 	buff, _ := proto.Marshal(message)
 
 	return buff
 }
 
+func (this *PingProto) ProtoBuf() *MediaAppSignalMessage {
+	return this._proto
+}
+
 type CallProto struct {
-	_proto *MediaAppSignalMessage
+	ProtBase
 }
 
 func (this *CallProto) FromBuff(buff []byte) {
@@ -118,7 +146,13 @@ func (this *CallProto) FromBuff(buff []byte) {
 }
 
 func (this *CallProto) ToBuff() []byte {
-	return nil
+	buff, _ := proto.Marshal(this._proto)
+
+	return buff
+}
+
+func (this *CallProto) ProtoBuf() *MediaAppSignalMessage {
+	return this._proto
 }
 
 type ProtoParser struct {
@@ -205,6 +239,10 @@ func (this *ProtoParser) UnMarsal(buff []byte) (protos []ISessionProto, err erro
 }
 
 func (this *ProtoParser) Marsal(proto ISessionProto) []byte {
+	if proto.ProtoBuf() != nil {
+		Log("send message : %s", proto.ProtoBuf().String())
+	}
+
 	protobuf := proto.ToBuff()
 
 	buff := make([]byte, 6+len(protobuf))

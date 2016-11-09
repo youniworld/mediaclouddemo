@@ -4,8 +4,6 @@ import (
 	"net"
 	"sync"
 	"time"
-
-	proto "github.com/golang/protobuf/proto"
 )
 
 type SessionServer struct {
@@ -47,7 +45,8 @@ func (this *SessionServer) Start(bindaddr string) {
 		sessionHandler._conn = conn
 
 		// set the keep alive interval
-		sessionHandler._conn.SetKeepAlivePeriod(time.Duration(10) * time.Second)
+		sessionHandler._conn.SetKeepAlive(true)
+		sessionHandler._conn.SetKeepAlivePeriod(time.Duration(5) * time.Second)
 
 		go sessionHandler.Start()
 	}
@@ -123,9 +122,13 @@ func (this *SessionHandler) Start() {
 					this._SessionServer._HandlerMapLock.Lock()
 					if hander, ok := this._SessionServer._SessionHandlers[session]; ok {
 
-						buff, _ := proto.Marshal(call._proto)
+						buff = parser.Marsal(call)
+
 						hander.Write(buff)
+					} else {
+						LogError("SessionHandler : call target session is not found")
 					}
+
 					this._SessionServer._HandlerMapLock.Unlock()
 				}
 
