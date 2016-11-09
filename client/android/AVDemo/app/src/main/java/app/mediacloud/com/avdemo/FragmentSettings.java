@@ -21,6 +21,8 @@ public class FragmentSettings extends Fragment {
 
         Button logout = (Button) getActivity().findViewById(R.id.btn_logout);
 
+        logout.setText("Logout(" + AppModel.getInstance().getUid() + ")");
+
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

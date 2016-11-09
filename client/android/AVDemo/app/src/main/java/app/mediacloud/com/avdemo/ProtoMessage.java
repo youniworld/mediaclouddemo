@@ -136,7 +136,7 @@ class LoginRespProto extends IMediaProtocol {
     }
 }
 
-class StateProto extends  IMediaProtocol{
+class StateProto extends IMediaProtocol{
     private String _uid;
     private int _state;
 
@@ -159,6 +159,89 @@ class StateProto extends  IMediaProtocol{
 
     public int get_state() {
         return _state;
+    }
+}
+
+class CallProto extends IMediaProtocol{
+    private MediaCallMessage _message;
+    private String _from;
+    private String _to;
+
+    public void set_from(String _from) {
+        this._from = _from;
+    }
+
+    public String get_from() {
+        return _from;
+    }
+
+    public void set_to(String _to) {
+        this._to = _to;
+    }
+
+    public String get_to() {
+        return _to;
+    }
+
+    public void set_message(MediaCallMessage _message) {
+        this._message = _message;
+    }
+
+    public MediaCallMessage get_message() {
+        return _message;
+    }
+
+    @Override
+    public void Unmarsal(Mediaappsingnal.MediaAppSignalMessage message) {
+        _message = new MediaCallMessage();
+
+        _from = message.getCall().getBase().getFrom();
+        _to = message.getCall().getBase().getTo();
+
+        if (message.getCall().hasCallInitiate()){
+            _message.set_callCmd(MediaCallMessage.CallCmd.ECallInitiate);
+            _message.set_caller(message.getCall().getCallInitiate().getCaller());
+            _message.set_sessionId(message.getCall().getCallInitiate().getMediaSession());
+        } else if (message.getCall().hasCallAccept()){
+            _message.set_callCmd(MediaCallMessage.CallCmd.ECallAccepted);
+            _message.set_sessionId(message.getCall().getCallAccept().getCallid());
+            _message.set_callee(message.getCall().getCallAccept().getCallee());
+        } else if (message.getCall().hasCallTerminate()){
+            _message.set_callCmd(MediaCallMessage.CallCmd.ECallTerminate);
+            _message.set_sessionId(message.getCall().getCallTerminate().getCallid());
+
+            int reason = message.getCall().getCallTerminate().getReason();
+
+            if (reason == 0){
+                _message.set_reason(MediaCallMessage.CallHangupReason.ECallNormal);
+            } else if (reason == 1){
+                _message.set_reason(MediaCallMessage.CallHangupReason.ECallBusy);
+            }
+        }
+    }
+
+    @Override
+    public byte[] Marsal() {
+        Mediaappsingnal.MediaAppSignalMessage message = null;
+
+        Mediaappsingnal.MediaAppSignalMessage.Builder builder = Mediaappsingnal.MediaAppSignalMessage.newBuilder();
+
+        builder.getCallBuilder().getBaseBuilder().setFrom(_from).setTo(_to).setPortal(_message.get_portal());
+
+        if (_message.get_callCmd() == MediaCallMessage.CallCmd.ECallInitiate){
+            builder.getCallBuilder().getCallInitiateBuilder().setCaller(_message.get_caller()).setCallid(_message.get_sessionId()).setMediaSession(_message.get_sessionId());
+
+        } else if (_message.get_callCmd() == MediaCallMessage.CallCmd.ECallAccepted){
+            builder.getCallBuilder().getCallAcceptBuilder().setCallee(_message.get_callee()).setCallid(_message.get_sessionId());
+
+        } else if (_message.get_callCmd() == MediaCallMessage.CallCmd.ECallTerminate){
+            builder.getCallBuilder().getCallTerminateBuilder().setCallid(_message.get_sessionId()).setReason(_message.get_reason().ordinal());
+
+        }
+
+        message = builder.build();
+
+        return message.toByteArray();
     }
 }
 

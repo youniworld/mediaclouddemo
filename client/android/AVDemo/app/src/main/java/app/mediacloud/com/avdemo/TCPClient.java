@@ -238,6 +238,8 @@ class TCPClient implements OnProtocolMessageListener{
     }
 
     public void notifyOnDisconnected(){
+        Log.i(TAG,"the socket is disconnected");
+
         _connectionExecutor.execute(new Runnable() {
             @Override
             public void run() {

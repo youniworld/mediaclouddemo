@@ -39,7 +39,7 @@
             android:launchMode="singleTask"
             >
         </activity>
-        <activity android:name=".MediaActivity"/>
+        <activity android:name=".ActivityMedia"/>
 
     </application>
 

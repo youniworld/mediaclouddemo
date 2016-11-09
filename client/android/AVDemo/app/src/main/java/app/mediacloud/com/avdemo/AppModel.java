@@ -28,8 +28,13 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 
 public class AppModel {
+    private static String TAG = "AppModel";
     public static interface OnUserStateChangedListener{
         public void OnUserStateChanged(String uid, People.State state);
+    }
+
+    public static interface  OnCallMessageListener{
+        public void OnCallMessageReceived(MediaCallMessage callMessage);
     }
 
     private Context _context;
@@ -67,6 +72,17 @@ public class AppModel {
                             }
                         }
                     });
+                } else if (message instanceof CallProto){
+                    final MediaCallMessage mcm = ((CallProto) message).get_message();
+
+                    _messageRecvExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            for(OnCallMessageListener listener:_callMessageListeners){
+                                listener.OnCallMessageReceived(mcm);
+                            }
+                        }
+                    });
                 }
             }
         }
@@ -74,6 +90,7 @@ public class AppModel {
 
     private List<OnConnectionListener> _connectionListeners = Collections.synchronizedList(new LinkedList<OnConnectionListener>());
     private List<OnUserStateChangedListener> _userStateChangeListeners = Collections.synchronizedList(new LinkedList<OnUserStateChangedListener>());
+    private List<OnCallMessageListener> _callMessageListeners = Collections.synchronizedList(new LinkedList<OnCallMessageListener>());
 
     public static AppModel getInstance(){
         return instance;
@@ -118,11 +135,14 @@ public class AppModel {
         _client.addListener(new OnConnectionListener() {
             @Override
             public void OnConnected() {
+                Log.i(TAG,"the connection was connected");
                 notifyConnected();
             }
 
             @Override
             public void OnDisconnected(final ErrorCode error) {
+                Log.i(TAG,"connection was disconnected : " + error.get_errorDesc());
+
                 notifyDisconnected(error);
             }
         });
@@ -131,12 +151,12 @@ public class AppModel {
     }
 
     public ErrorCode Register(String uid, String pwd, String portal) {
-        HashMap<String,Object> header = new HashMap<String, Object>();
+        HashMap<String,Object> body = new HashMap<String, Object>();
 
-        header.put("uid",uid);
-        header.put("pwd",pwd);
+        body.put("uid",uid);
+        body.put("pwd",pwd);
 
-        String jsonStr = HttpClient.Post("http://169.254.66.109:9800/register",header);
+        String jsonStr = HttpClient.Post("http://lianmaibiz.hifun.mobi:9800/register",body);
 
         if (jsonStr == null){
             return ErrorCode.KErrorGeneral;
@@ -169,7 +189,7 @@ public class AppModel {
         Map<String,String> header = new HashMap<String, String>();
         header.put("token",get_LoginToken());
 
-        String jsonStr = HttpClient.Get("http://169.254.66.109:9800/user/all",header);
+        String jsonStr = HttpClient.Get("http://lianmaibiz.hifun.mobi:9800/user/all",header);
 
         try {
             JSONObject jsonObject = new JSONObject(jsonStr);
@@ -213,6 +233,35 @@ public class AppModel {
 
     }
 
+    public String createSession(){
+        Map<String,String> header = new HashMap<String, String>();
+        header.put("token",get_LoginToken());
+
+        String jsonStr = HttpClient.Get("http://lianmaibiz.hifun.mobi:9800/mediasession/create",header);
+
+        if (jsonStr != null){
+            try {
+                JSONObject jsonObj = new JSONObject(jsonStr);
+
+                int err = jsonObj.getInt("errcode");
+
+                if (err != 0){
+                    return null;
+                }
+
+                String sessionid = jsonObj.getString("sessionid");
+
+                if (sessionid != null){
+                    return sessionid;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
     public void Login(final String uid, final String pwd, final String portal, final ICallback callback){
         _loginExecutor.execute(new Runnable() {
             @Override
@@ -225,7 +274,7 @@ public class AppModel {
                 }
 
                 try {
-                    _client.connect("169.254.66.109:9300");
+                    _client.connect("lianmaibiz.hifun.mobi:9300");
                     _token = _client.Login(uid,pwd,portal);
                     isLoggined = true;
                     _uid = uid;
@@ -252,6 +301,8 @@ public class AppModel {
             _users.clear();
         }
 
+        _uid = null;
+
         pref.edit().putString("uid","").putString("pwd","").putString("portal","").commit();
     }
 
@@ -259,9 +310,6 @@ public class AppModel {
         return _token;
     }
 
-    public String get_uid() {
-        return _uid;
-    }
 
     public void saveUser(String uid, String pwd, String portal){
         SharedPreferences pref = _context.getSharedPreferences(STORE,Context.MODE_PRIVATE);
@@ -270,9 +318,14 @@ public class AppModel {
     }
 
     public String getUid(){
+        if (_uid != null){
+            return _uid;
+        }
         SharedPreferences pref = _context.getSharedPreferences(STORE,Context.MODE_PRIVATE);
 
-        return pref.getString("uid","");
+        _uid = pref.getString("uid","");
+
+        return _uid;
     }
 
     public String getPwd(){
@@ -343,6 +396,18 @@ public class AppModel {
 
     public void removeStateChangeListener(OnUserStateChangedListener listener){
         _userStateChangeListeners.remove(listener);
+    }
+
+    public void addCallMessageListener(OnCallMessageListener listener){
+        if (_callMessageListeners.contains(listener)){
+            return;
+        }
+
+        _callMessageListeners.add(listener);
+    }
+
+    public void removeCallMessageListener(OnCallMessageListener listener){
+        _callMessageListeners.remove(listener);
     }
 
     private static String USER_PRIVATE_STORE(String uid){
