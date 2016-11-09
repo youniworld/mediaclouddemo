@@ -59,6 +59,14 @@ public class MediaCallMessage {
         return _reason;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("session id : %s, caller : %s, callCmd : %s, portal : %s", _sessionId,_caller,_callCmd,_portal));
+
+        return  sb.toString();
+    }
+
     public enum CallHangupReason {ECallBusy, ECallNormal}
 
     public enum CallCmd {ECallAccepted, ECallTerminate, ECallInitiate}
