@@ -192,7 +192,7 @@ func (this *ProtoParser) UnMarsal(buff []byte) (protos []ISessionProto, err erro
 
 		message := &MediaAppSignalMessage{}
 
-		err = proto.Unmarshal(this._bytesLeft[6:], message)
+		err = proto.Unmarshal(this._bytesLeft[6:6+int(protolen)], message)
 
 		if err != nil {
 			LogError(err.Error())
