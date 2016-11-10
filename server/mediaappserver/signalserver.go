@@ -76,16 +76,20 @@ func (this *SessionHandler) Start() {
 
 		protos, err := parser.UnMarsal(buff[:length])
 
+		if err != nil {
+
+			LogError(err.Error())
+			this.OnLogout()
+
+			return
+
+		}
+
+		if protos == nil || len(protos) <= 0 {
+			continue
+		}
+
 		for _, pr := range protos {
-			if err != nil {
-
-				LogError(err.Error())
-				this.OnLogout()
-
-				return
-
-			}
-
 			if pr != nil {
 
 				if login, ok := pr.(*LoginProto); ok {
