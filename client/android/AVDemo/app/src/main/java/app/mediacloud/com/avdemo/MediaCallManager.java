@@ -82,7 +82,7 @@ public class MediaCallManager {
                         session.set_callManager(MediaCallManager.getInstance());
                         session.set_client(_client);
                         session.set_caller(callMessage.get_caller());
-                        session.set_callee(callMessage.get_callee());
+                        session.set_callee(AppModel.getInstance().getUid());
                         session.set_sessionId(callMessage.get_sessionId());
 
                         try {
@@ -96,13 +96,14 @@ public class MediaCallManager {
                 }
 
             }else{
-                _activeSession = new MediaReceiveCallSession(callMessage.get_sessionId());
+                MediaReceiveCallSession session = new MediaReceiveCallSession(callMessage.get_sessionId());
 
                 if (callMessage.get_callCmd().equals(MediaCallMessage.CallCmd.ECallInitiate)){
+                    _activeSession = session;
                     _activeSession.set_callManager(MediaCallManager.getInstance());
                     _activeSession.set_client(_client);
                     _activeSession.set_caller(callMessage.get_caller());
-                    _activeSession.set_callee(callMessage.get_callee());
+                    _activeSession.set_callee(AppModel.getInstance().getUid());
                     _activeSession.set_sessionId(callMessage.get_sessionId());
 
                     try {

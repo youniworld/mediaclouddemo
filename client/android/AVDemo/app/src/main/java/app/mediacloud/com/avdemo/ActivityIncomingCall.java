@@ -26,7 +26,11 @@ public class ActivityIncomingCall extends ActivityCallBase {
             @Override
             public void onClick(View v) {
                 try {
-                    MediaCallManager.getInstance().hangupCall();
+                    MediaCallManager.getInstance().answerCall();
+
+                    startActivity(new Intent(ActivityIncomingCall.this,ActivityAcceptCall.class));
+
+                    finish();
                 } catch (Exception e) {
                     e.printStackTrace();
 
@@ -40,7 +44,7 @@ public class ActivityIncomingCall extends ActivityCallBase {
             @Override
             public void onClick(View v) {
                 try {
-                    MediaCallManager.getInstance().answerCall();
+                    MediaCallManager.getInstance().hangupCall();
                 } catch (Exception e) {
                     e.printStackTrace();
 

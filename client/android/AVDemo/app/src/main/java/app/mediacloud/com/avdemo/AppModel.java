@@ -160,7 +160,12 @@ public class AppModel {
         lbm.registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                
+                Intent incomingCall = new Intent(_context,ActivityIncomingCall.class);
+                incomingCall.putExtra("uid",intent.getStringExtra("uid"));
+
+                incomingCall.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                context.startActivity(incomingCall);
             }
         },new IntentFilter(MediaCallManager.INCOMING_CALL_ACTION));
     }

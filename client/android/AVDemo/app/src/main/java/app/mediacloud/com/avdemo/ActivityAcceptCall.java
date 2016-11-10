@@ -16,6 +16,7 @@ import com.vlee78.android.media.MediaView;
 public class ActivityAcceptCall extends ActivityCallBase{
     private String _mediaSessionId;
     private String _url;
+    private String _hpspUrl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +44,7 @@ public class ActivityAcceptCall extends ActivityCallBase{
                     public void run() {
                         try {
                             MediaCallManager.getInstance().hangupCall();
+                            MediaSdk.close(_hpspUrl);
                         } catch (Exception e) {
                             e.printStackTrace();
 
@@ -60,7 +62,10 @@ public class ActivityAcceptCall extends ActivityCallBase{
         view.bind(100);
         preview.bind(101);
 
-        _url = String.format("http://%s:%s",_mediaSessionId,AppModel.getInstance().getUid());
+        _hpspUrl = "hpsp://"+_mediaSessionId;
+
+        _url = String.format("%s:%s",_hpspUrl,AppModel.getInstance().getUid());
+
         MediaSdk.open(6, _url, 100, 101);
 
         MediaSdk.setCameraFront(true);
