@@ -239,11 +239,11 @@ func (this *ProtoParser) UnMarsal(buff []byte) (protos []ISessionProto, err erro
 }
 
 func (this *ProtoParser) Marsal(proto ISessionProto) []byte {
+	protobuf := proto.ToBuff()
+
 	if proto.ProtoBuf() != nil {
 		Log("send message : %s", proto.ProtoBuf().String())
 	}
-
-	protobuf := proto.ToBuff()
 
 	buff := make([]byte, 6+len(protobuf))
 
