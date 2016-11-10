@@ -43,6 +43,12 @@ public class ActivityLogin extends Activity {
                 final ProgressDialog pd = new ProgressDialog(me);
                 pd.show();
 
+                if(!Utils.getInstance().hasConnection()){
+                    ShowToast("please check the network connection", pd);
+
+                    return;
+                }
+
                 EditText uid = (EditText) findViewById(R.id.et_login_name);
                 EditText pwd = (EditText) findViewById(R.id.et_login_pwd);
 
@@ -85,6 +91,11 @@ public class ActivityLogin extends Activity {
                 final ProgressDialog pd = new ProgressDialog(me);
                 pd.show();
 
+                if(!Utils.getInstance().hasConnection()){
+                    ShowToast("please check the network connection", pd);
+                    return;
+                }
+
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -116,7 +127,10 @@ public class ActivityLogin extends Activity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                pd.cancel();
+                if(pd != null){
+                    pd.cancel();
+                }
+
                 Toast.makeText(me,msg,Toast.LENGTH_SHORT).show();
             }
         });

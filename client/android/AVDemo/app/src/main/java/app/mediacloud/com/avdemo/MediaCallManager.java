@@ -85,6 +85,9 @@ public class MediaCallManager {
                         session.set_callee(AppModel.getInstance().getUid());
                         session.set_sessionId(callMessage.get_sessionId());
 
+                        session.set_from(AppModel.getInstance().getUid());
+                        session.set_to(callMessage.get_caller());
+
                         try {
                             session.hangupCall();
                         } catch (Exception e) {
@@ -105,6 +108,8 @@ public class MediaCallManager {
                     _activeSession.set_caller(callMessage.get_caller());
                     _activeSession.set_callee(AppModel.getInstance().getUid());
                     _activeSession.set_sessionId(callMessage.get_sessionId());
+                    _activeSession.set_from(AppModel.getInstance().getUid());
+                    _activeSession.set_to(callMessage.get_caller());
 
                     try {
                         _activeSession.onReceiveInCommingCall();
@@ -230,6 +235,14 @@ public class MediaCallManager {
 
         return _activeSession.get_sessionId();
     }
+
+    public String getIncommingCaller(){
+        if (_activeSession == null){
+            return null;
+        }
+
+        return _activeSession.get_caller();
+    }
 }
 
 abstract class MediaCallSessionBase{
@@ -286,6 +299,14 @@ abstract class MediaCallSessionBase{
         _state = state;
 
         _callManager.noitfyStateChanged(_state);
+    }
+
+    public void set_from(String _from) {
+        this._from = _from;
+    }
+
+    public void set_to(String _to) {
+        this._to = _to;
     }
 
     public void hangupCall() throws Exception{

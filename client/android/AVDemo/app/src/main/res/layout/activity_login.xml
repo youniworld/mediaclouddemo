@@ -13,12 +13,14 @@
 
         <EditText
             android:layout_marginTop="20dp"
+            android:maxLines="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="name"
             android:id="@+id/et_login_name" />
 
         <EditText
+            android:maxLines="1"
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

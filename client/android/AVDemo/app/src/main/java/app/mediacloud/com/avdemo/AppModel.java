@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -13,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -50,8 +52,11 @@ public class AppModel {
     private static TCPClient _client = new TCPClient();
     private final static String STORE = "_avdemo";
     private String _token;
-    private boolean isLoggined = false;
     private String _uid;
+    private String _pwd;
+    private String _portal;
+    private boolean _isLogout = false;
+
     private List<People> _users;
     private OnProtocolMessageListener _messageListener = new OnProtocolMessageListener() {
         @Override
@@ -148,8 +153,12 @@ public class AppModel {
                 Log.i(TAG,"connection was disconnected : " + error.get_errorDesc());
 
                 notifyDisconnected(error);
+
+                Reconnect();
             }
         });
+
+        Utils.getInstance().init(_context);
 
         _client.addMessageListener(_messageListener);
 
@@ -168,6 +177,15 @@ public class AppModel {
                 context.startActivity(incomingCall);
             }
         },new IntentFilter(MediaCallManager.INCOMING_CALL_ACTION));
+
+        String pwd = AppModel.getInstance().getPwd();
+
+        // try to auto login
+        if(!TextUtils.isEmpty(pwd)) {
+            String uid = AppModel.getInstance().getUid();
+            String portal = AppModel.getInstance().getPortal();
+            AppModel.getInstance().AutoLogin(uid, pwd, portal);
+        }
     }
 
     public ErrorCode Register(String uid, String pwd, String portal) {
@@ -287,26 +305,68 @@ public class AppModel {
             @Override
             public void run() {
                 if(_client.isLogined()){
-                    callback.OnSuccess();
+                    if(callback != null){
+                        callback.OnSuccess();
+                    }
+
                     return;
                 }else{
                     _client.Disconnect();
                 }
 
                 try {
-                    _client.connect("lianmaibiz.hifun.mobi:9300");
-                    _token = _client.Login(uid,pwd,portal);
-                    isLoggined = true;
-                    _uid = uid;
-                    callback.OnSuccess();
-
+                    SyncLogin(uid,pwd,portal);
                     notifyConnected();
+
+                    if (callback != null){
+                        callback.OnSuccess();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
 
                     callback.OnFailed(ErrorCode.KConnectionError);
 
                     notifyDisconnected(ErrorCode.KConnectionError);
+                }
+            }
+        });
+    }
+
+    public void SyncLogin(final String uid, final String pwd, final String portal) throws Exception{
+        _isLogout = false;
+
+        try {
+            if (_client.isLogined()){
+                return;
+            }
+
+            _client.connect("lianmaibiz.hifun.mobi:9300");
+            _token = _client.Login(uid,pwd,portal);
+
+            _uid = uid;
+            _pwd = pwd;
+            _portal = portal;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            throw e;
+        }
+    }
+
+    public void AutoLogin(final String uid, final String pwd, final String portal){
+        _uid = uid;
+        _pwd = pwd;
+        _portal = portal;
+
+        _loginExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    SyncLogin(uid,pwd,portal);
+
+                    notifyConnected();
+                } catch (Exception e) {
+                    Reconnect();
                 }
             }
         });
@@ -323,7 +383,12 @@ public class AppModel {
 
         _uid = null;
 
+        _isLogout = true;
         pref.edit().putString("uid","").putString("pwd","").putString("portal","").commit();
+    }
+
+    public boolean isLoggined() {
+        return _client.isLogined();
     }
 
     public String get_LoginToken() {
@@ -430,6 +495,41 @@ public class AppModel {
         _callMessageListeners.remove(listener);
     }
 
+    private void Reconnect(){
+        if (_isLogout){
+            return;
+        }
+
+        Log.w(TAG,"start to reconnect...");
+
+        _loginExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    Thread.sleep(2000);
+
+                    if (_isLogout){
+                        return;
+                    }
+
+                    if(!Utils.getInstance().hasConnection()){
+                        Reconnect();
+                        return;
+                    }
+
+                    SyncLogin(_uid,_pwd,_portal);
+
+                    notifyConnected();
+                }catch (Exception e){
+                    if (e instanceof InterruptedIOException){
+                        return;
+                    }
+
+                    Reconnect();
+                }
+            }
+        });
+    }
     private static String USER_PRIVATE_STORE(String uid){
         return uid + STORE;
     }

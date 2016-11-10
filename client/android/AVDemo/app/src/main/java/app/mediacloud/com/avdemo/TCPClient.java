@@ -220,6 +220,8 @@ class TCPClient implements OnProtocolMessageListener{
         LogoutProto logoutProto = new LogoutProto();
 
         _messageQueue.offer(logoutProto);
+
+        Disconnect();
     }
 
     public void notifyOnConnected(){
@@ -270,6 +272,7 @@ class TCPClient implements OnProtocolMessageListener{
             if (_isConnected){
                 return;
             }
+
             _isConnected = false;
             Close();
 
@@ -367,6 +370,10 @@ class TCPClient implements OnProtocolMessageListener{
                             }
                         }
                     }catch (Exception e){
+                        if(_stopped){
+                            return;
+                        }
+
                         e.printStackTrace();
                         _stopped = true;
                         Disconnect();
@@ -407,11 +414,19 @@ class TCPClient implements OnProtocolMessageListener{
                         while (!_stopped){
                             IMediaProtocol proto = _messageQueue.take();
 
+                            if(proto == null){
+                                throw new Exception("the proto is null!");
+                            }
+
                             byte[] buff = _parser.Marsal(proto);
 
                             _socket.getOutputStream().write(buff);
                         }
                     }catch (Exception e){
+                        if(_stopped){
+                            return;
+                        }
+
                         e.printStackTrace();
                         _stopped = true;
                         Disconnect();
@@ -424,7 +439,14 @@ class TCPClient implements OnProtocolMessageListener{
         }
 
         public void Stop(){
+            if (_stopped){
+                return;
+            }
+
             _stopped = true;
+
+            // tricky solution to stoping the _messageQueue waiting.
+            //_messageQueue.offer(null);
         }
     }
 }

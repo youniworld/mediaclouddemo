@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by youni on 2016/11/7.
@@ -30,6 +33,8 @@ public class FragmentP2P extends Fragment {
     private ListView _peopleList;
     private Handler _H = new Handler();
     private PeopleAdapter _adapter;
+    private ExecutorService _executor = Executors.newSingleThreadExecutor();
+
     private OnConnectionListener _connectionListener = new OnConnectionListener() {
         @Override
         public void OnConnected() {
@@ -82,6 +87,31 @@ public class FragmentP2P extends Fragment {
 
         _peopleList = (ListView) getActivity().findViewById(R.id.lv_people_list);
 
+        final SwipeRefreshLayout srl = (SwipeRefreshLayout) getActivity().findViewById(R.id.srl_refesh_people);
+
+        srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                _executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        final List<People> users = AppModel.getInstance().getAllUsersFromServer();
+
+                        _H.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                _adapter.refresh(users);
+
+                                _adapter.notifyDataSetChanged();
+
+                                srl.setRefreshing(false);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
         _adapter = new PeopleAdapter(getActivity());
 
         _peopleList.setAdapter(_adapter);
@@ -108,10 +138,16 @@ public class FragmentP2P extends Fragment {
 
 
     void refresh(){
-        new Thread(new Runnable() {
+        _executor.execute(new Runnable() {
             @Override
             public void run() {
-                final List<People> users = AppModel.getInstance().getAllUsersFromServer();
+                List<People> peoples = AppModel.getInstance().getAllUsers();
+
+                if (peoples == null || peoples.isEmpty()){
+                    peoples = AppModel.getInstance().getAllUsersFromServer();
+                }
+
+                final List<People> users = peoples;
 
                 _H.post(new Runnable() {
                     @Override
@@ -122,7 +158,7 @@ public class FragmentP2P extends Fragment {
                     }
                 });
             }
-        }).start();
+        });
     }
 
     @Override

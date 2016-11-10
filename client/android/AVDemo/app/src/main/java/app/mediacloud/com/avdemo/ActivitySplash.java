@@ -32,17 +32,7 @@ public class ActivitySplash extends Activity {
                 if(!TextUtils.isEmpty(pwd)){
                     String uid = AppModel.getInstance().getUid();
                     String portal = AppModel.getInstance().getPortal();
-                    AppModel.getInstance().Login(uid, pwd, portal, new ICallback() {
-                        @Override
-                        public void OnSuccess() {
-
-                        }
-
-                        @Override
-                        public void OnFailed(ErrorCode error) {
-
-                        }
-                    });
+                    AppModel.getInstance().AutoLogin(uid, pwd, portal);
 
                     startActivity(new Intent(ActivitySplash.this, ActivityMain.class));
                 }else{

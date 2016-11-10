@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.concurrent.ExecutorService;
 
@@ -31,6 +32,9 @@ public class ActivityDialCall extends ActivityCallBase {
         }
 
         setContentView(R.layout.activity_dial_call);
+
+        TextView toView = (TextView) findViewById(R.id.tv_call_to);
+        toView.setText(_to);
 
         me = this;
 
