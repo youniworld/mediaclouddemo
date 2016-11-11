@@ -17,6 +17,7 @@ public class ActivityAcceptCall extends ActivityCallBase{
     private String _mediaSessionId;
     private String _url;
     private String _hpspUrl;
+    private boolean _steamClosed = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +44,8 @@ public class ActivityAcceptCall extends ActivityCallBase{
                     @Override
                     public void run() {
                         try {
+                            closeStream();
                             MediaCallManager.getInstance().hangupCall();
-                            MediaSdk.close(_hpspUrl);
                         } catch (Exception e) {
                             e.printStackTrace();
 
@@ -76,6 +77,7 @@ public class ActivityAcceptCall extends ActivityCallBase{
         @Override
         public void OnCallStateChanged(MediaCallManager.CallState state) {
             if (state == MediaCallManager.CallState.EHangup || state == MediaCallManager.CallState.EReject){
+                closeStream();
                 finish();
             }
         }
@@ -86,5 +88,18 @@ public class ActivityAcceptCall extends ActivityCallBase{
         super.onDestroy();
 
         MediaCallManager.getInstance().removeStateListener(_stateChangeListener);
+    }
+
+    void openStream(){
+
+    }
+
+    void closeStream(){
+        if (_steamClosed){
+            return;
+        }
+
+        MediaSdk.close(_hpspUrl);
+        _steamClosed = true;
     }
 }

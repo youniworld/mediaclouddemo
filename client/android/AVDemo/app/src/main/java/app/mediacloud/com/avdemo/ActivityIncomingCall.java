@@ -2,6 +2,9 @@ package app.mediacloud.com.avdemo;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -56,6 +59,8 @@ public class ActivityIncomingCall extends ActivityCallBase {
                 }
             }
         });
+
+        playRingtong();
     }
 
     @Override
@@ -77,5 +82,13 @@ public class ActivityIncomingCall extends ActivityCallBase {
             }
         }
     };
+
+    void playRingtong(){
+        Uri ringUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+        _audioManager.setMode(AudioManager.MODE_RINGTONE);
+        _audioManager.setSpeakerphoneOn(true);
+        _ringtone = RingtoneManager.getRingtone(this, ringUri);
+        _ringtone.play();
+    }
 
 }
