@@ -4,9 +4,9 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:paddingTop="50dp"
         android:layout_weight="1"
-        android:layout_marginTop="100dp"
-        android:layout_margin="50dp"
+        android:layout_margin="10dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical">
@@ -16,7 +16,7 @@
             android:maxLines="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="name"
+            android:hint="Name"
             android:id="@+id/et_login_name" />
 
         <EditText
@@ -24,32 +24,37 @@
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="password"
+            android:hint="Password"
             android:inputType="textPassword"
             android:id="@+id/et_login_pwd" />
+    </LinearLayout>
 
-        <LinearLayout
-            android:layout_margin="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/btn_login"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:text="@string/string_bt_login"
-                android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:text="@string/string_bt_login"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_blue_bright"
 
-            <Button
-                android:id="@+id/btn_register"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:text="@string/string_bt_register"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+            android:layout_marginRight="5dp"
+            />
 
+        <Button
+            android:id="@+id/btn_register"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:text="@string/string_bt_register"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:background="@android:color/holo_blue_bright"
+            />
     </LinearLayout>
 
 </LinearLayout>

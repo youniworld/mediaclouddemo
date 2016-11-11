@@ -9,6 +9,9 @@ import android.widget.Button;
 import com.vlee78.android.media.MediaSdk;
 import com.vlee78.android.media.MediaView;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Created by youni on 2016/11/9.
  */
@@ -18,6 +21,7 @@ public class ActivityAcceptCall extends ActivityCallBase{
     private String _url;
     private String _hpspUrl;
     private boolean _steamClosed = true;
+    private ExecutorService _streamExecutor = Executors.newSingleThreadExecutor();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,13 +68,9 @@ public class ActivityAcceptCall extends ActivityCallBase{
         preview.bind(101);
 
         _hpspUrl = "hpsp://"+_mediaSessionId;
-
         _url = String.format("%s:%s",_hpspUrl,AppModel.getInstance().getUid());
 
-        MediaSdk.open(6, _url, 100, 101);
-
-        MediaSdk.setCameraFront(true);
-        MediaSdk.setPushRecord(true);
+        openStream();
     }
 
     private MediaCallManager.OnCallStateChangeListener _stateChangeListener = new MediaCallManager.OnCallStateChangeListener() {
@@ -91,7 +91,16 @@ public class ActivityAcceptCall extends ActivityCallBase{
     }
 
     void openStream(){
+        _streamExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                MediaSdk.open(6, _url, 100, 101);
 
+                MediaSdk.setCameraFront(true);
+                MediaSdk.setPushRecord(true);
+                _steamClosed = false;
+            }
+        });
     }
 
     void closeStream(){
@@ -99,7 +108,16 @@ public class ActivityAcceptCall extends ActivityCallBase{
             return;
         }
 
-        MediaSdk.close(_hpspUrl);
-        _steamClosed = true;
+        _streamExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (_steamClosed){
+                    return;
+                }
+
+                MediaSdk.close(_hpspUrl);
+                _steamClosed = true;
+            }
+        });
     }
 }
