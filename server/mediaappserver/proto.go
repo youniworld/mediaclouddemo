@@ -186,7 +186,7 @@ func (this *ProtoParser) UnMarsal(buff []byte) (protos []ISessionProto, err erro
 
 		Log("the proto len : %s", protolen)
 
-		if 6+int(protolen) < len(this._bytesLeft) {
+		if len(this._bytesLeft) < 6+int(protolen) {
 			return protos, nil
 		}
 
