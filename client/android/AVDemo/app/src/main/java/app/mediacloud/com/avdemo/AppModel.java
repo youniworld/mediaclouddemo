@@ -56,6 +56,7 @@ public class AppModel {
     private String _pwd;
     private String _portal;
     private boolean _isLogout = false;
+    private boolean _autoLogin = false;
 
     private List<People> _users;
     private OnProtocolMessageListener _messageListener = new OnProtocolMessageListener() {
@@ -346,6 +347,8 @@ public class AppModel {
             _uid = uid;
             _pwd = pwd;
             _portal = portal;
+
+            _autoLogin = true;
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -354,6 +357,8 @@ public class AppModel {
     }
 
     public void AutoLogin(final String uid, final String pwd, final String portal){
+        _autoLogin = true;
+
         _uid = uid;
         _pwd = pwd;
         _portal = portal;
@@ -384,6 +389,7 @@ public class AppModel {
         _uid = null;
 
         _isLogout = true;
+        _autoLogin = false;
         pref.edit().putString("uid","").putString("pwd","").putString("portal","").commit();
     }
 
@@ -497,6 +503,10 @@ public class AppModel {
 
     private void Reconnect(){
         if (_isLogout){
+            return;
+        }
+
+        if (!_autoLogin){
             return;
         }
 
