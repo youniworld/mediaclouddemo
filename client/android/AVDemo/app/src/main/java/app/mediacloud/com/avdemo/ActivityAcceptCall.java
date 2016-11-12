@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.vlee78.android.media.MediaSdk;
 import com.vlee78.android.media.MediaView;
@@ -36,6 +37,10 @@ public class ActivityAcceptCall extends ActivityCallBase{
         }
 
         setContentView(R.layout.activity_accept_call);
+
+        TextView callName = (TextView) findViewById(R.id.tv_call_name);
+
+        callName.setText(MediaCallManager.getInstance().getPeer());
 
         MediaCallManager.getInstance().addStateListener(_stateChangeListener);
 

@@ -243,6 +243,18 @@ public class MediaCallManager {
 
         return _activeSession.get_caller();
     }
+
+    public String getPeer(){
+        if (_activeSession == null){
+            return null;
+        }
+
+        if (_activeSession instanceof  MediaSendCallSession){
+            return _activeSession.get_callee();
+        }else{
+            return _activeSession.get_caller();
+        }
+    }
 }
 
 abstract class MediaCallSessionBase{
