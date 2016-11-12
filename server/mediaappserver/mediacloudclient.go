@@ -72,6 +72,7 @@ type MediaCloudClient struct {
 	_conn             net.Conn
 	_bytesLeft        []byte
 	_messageMap       map[PacketID]Message
+	_messageMapLock   sync.Mutex
 	_listenerLock     sync.Mutex
 	_pingChan         chan bool
 	_heartbeatStarted bool
@@ -293,7 +294,9 @@ func (this *MediaCloudClient) MessageLoop() {
 
 			Log("send the create session : %V", sessionCreate)
 
+			this._messageMapLock.Lock()
 			this._messageMap[createSession._id] = createSession
+			this._messageMapLock.Unlock()
 		}
 	}
 
@@ -309,6 +312,13 @@ func (this *MediaCloudClient) MessageRecvLoop() {
 				createSession, _ := this._messageMap[createSessionResp._id].(*CmdCreateSession)
 
 				createSession._MessageRespCh <- createSessionResp
+
+				// after notify the message to the waiter, we should remove the createsession from the session map
+
+				this._messageMapLock.Lock()
+				delete(this._messageMap, createSessionResp._id)
+				this._messageMapLock.Unlock()
+
 			}
 			//this.NotifyListener(createSessionResp)
 		}
