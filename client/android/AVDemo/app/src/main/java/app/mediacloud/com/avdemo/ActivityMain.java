@@ -94,4 +94,9 @@ public class ActivityMain extends FragmentActivity {
         AppModel.getInstance().removeConnectionListener(_connListener);
         super.onDestroy();
     }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
 }
