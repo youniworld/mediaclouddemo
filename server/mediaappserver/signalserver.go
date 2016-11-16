@@ -93,21 +93,21 @@ func (this *SessionHandler) Start() {
 			if pr != nil {
 
 				if login, ok := pr.(*LoginProto); ok {
-					yes := _Auth.VerifyUser(login._user, login._pwd, login._portal)
-
-					if !yes {
-						login._success = false
-						login._reason = "unauthorized user"
-						this._conn.Write(parser.Marsal(login))
-						this._conn.Close()
-						return
-					}
-
 					ok := _SessionMgr.CreatePortal(login._portal)
 
 					if !ok {
 						login._success = false
 						login._reason = "unauthorized portal"
+						this._conn.Write(parser.Marsal(login))
+						this._conn.Close()
+						return
+					}
+
+					yes := _Auth.VerifyUser(login._user, login._pwd, login._portal)
+
+					if !yes {
+						login._success = false
+						login._reason = "unauthorized user"
 						this._conn.Write(parser.Marsal(login))
 						this._conn.Close()
 						return

@@ -98,6 +98,11 @@ func (this *DBManager) CreatePortal(portal string, uid string) bool {
 }
 
 func CreateSessionTable(db *sql.DB, uid string) bool {
+	if len(uid) <= 0 {
+		LogError("the portal uid is not found")
+		return false
+	}
+
 	sql_create_table := fmt.Sprintf("create table if not exists %s_session ("+
 		"_id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,"+
 		"_uid varchar(200) NOT NULL,"+
@@ -118,6 +123,11 @@ func CreateSessionTable(db *sql.DB, uid string) bool {
 //	KUserAvatar = "_avatar"
 //)
 func CreateUserTable(db *sql.DB, uid string) bool {
+	if len(uid) <= 0 {
+		LogError("the portal uid is not found")
+		return false
+	}
+
 	sql_create_table := fmt.Sprintf("create table if not exists %s_user ("+
 		"_id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,"+
 		"_uid varchar(200) NOT NULL,"+
@@ -273,7 +283,17 @@ type DBUser struct {
 func (this *DBUser) AddUser(user *User, portal string) bool {
 	portalUid := _Cache.GetPortalUid(portal)
 
-	CreateUserTable(this._db, portalUid)
+	if len(portalUid) <= 0 {
+		LogError("the portal is not found")
+
+		return false
+	}
+
+	if !CreateUserTable(this._db, portalUid) {
+		LogError("create user table error")
+
+		return false
+	}
 
 	sql := fmt.Sprintf("insert into %s_user (%s,%s,%s,%s,%s) values ('%s','%s','%s','%s','%s')", portalUid, KUserUid, KUserPwd, KUserNick, KUserAvatar, KUserToken, user.Uid, user.Pwd, user.Uid, "", "")
 
