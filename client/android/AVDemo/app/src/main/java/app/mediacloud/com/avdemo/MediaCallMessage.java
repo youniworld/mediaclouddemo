@@ -67,7 +67,7 @@ public class MediaCallMessage {
         return  sb.toString();
     }
 
-    public enum CallHangupReason {ECallBusy, ECallNormal}
+    public enum CallHangupReason {ECallNormal,ECallBusy}
 
     public enum CallCmd {ECallAccepted, ECallTerminate, ECallInitiate}
 }
