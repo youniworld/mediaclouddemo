@@ -80,16 +80,7 @@ func (this *DBManager) Open(dbname string, dbuser string, dbpwd string, dburl st
 	Log("db is opened : %s", this._datasource)
 }
 
-func (this *DBManager) CreatePortal(portal string) bool {
-	if _Cache.PortalCreated(portal) {
-		return true
-	}
-
-	uid := _Cache.GetPortalUid(portal)
-
-	if len(uid) <= 0 {
-		return false
-	}
+func (this *DBManager) CreatePortal(portal string, uid string) bool {
 
 	if !CreateSessionTable(this._db, uid) {
 		LogError("create session table failed")

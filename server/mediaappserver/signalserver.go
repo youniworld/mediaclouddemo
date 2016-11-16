@@ -103,6 +103,16 @@ func (this *SessionHandler) Start() {
 						return
 					}
 
+					ok := _SessionMgr.CreatePortal(login._portal)
+
+					if !ok {
+						login._success = false
+						login._reason = "unauthorized portal"
+						this._conn.Write(parser.Marsal(login))
+						this._conn.Close()
+						return
+					}
+
 					this.OnLogin(login)
 
 					login._token = _Auth.GetTokenByUid(login._user, login._pwd, login._portal)
@@ -153,9 +163,6 @@ func (this *SessionHandler) Write(buff []byte) {
 }
 
 func (this *SessionHandler) OnLogin(login *LoginProto) {
-
-	_DBMgr.CreatePortal(login._portal)
-
 	session := _SessionMgr.NewSession(login._user, login._pwd, login._portal)
 
 	this._session = session

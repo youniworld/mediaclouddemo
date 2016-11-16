@@ -109,6 +109,20 @@ func (this *SessionManager) PublishSessionChange(state uint8, uid string) {
 	this._subscriberLock.Unlock()
 }
 
+func (this *SessionManager) CreatePortal(portal string) bool {
+	if _Cache.PortalCreated(portal) {
+		return true
+	}
+
+	uid := _Cache.GetPortalUid(portal)
+
+	if len(uid) <= 0 {
+		return false
+	}
+
+	return _DBMgr.CreatePortal(portal, uid)
+}
+
 func GenerateSessionId(uid string, pwd string, portal string) string {
 	return GenerateToken(uid, pwd, portal)
 }
