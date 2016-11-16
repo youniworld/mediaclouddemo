@@ -10,6 +10,7 @@ var (
 	KErrorPageNotFound      = &Error{ErrorCode: 1000, ErrorDesc: "page not found"}
 	KErrorBodyParseError    = &Error{ErrorCode: 1001, ErrorDesc: "wrong body"}
 	KErrorPortalNotFound    = &Error{ErrorCode: 1002, ErrorDesc: "portal not found in the header"}
+	KErrorPortalInvalid     = &Error{ErrorCode: 1003, ErrorDesc: "portal is invalid"}
 
 	// user
 	KErrorUserExisted  = &Error{ErrorCode: 3000, ErrorDesc: "user existed"}

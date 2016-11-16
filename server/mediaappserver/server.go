@@ -87,6 +87,11 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(_Cache.GetPortalUid(portal)) <= 0 {
+		w.Write(KErrorPortalInvalid.toJson())
+		return
+	}
+
 	if !AuthRequest(w, r, portal) {
 		w.Write(KErrorUnauthorizedToken.toJson())
 		return
@@ -138,6 +143,18 @@ func MediaSessionHandler(w http.ResponseWriter, r *http.Request) {
 	pathInfo := strings.Trim(r.URL.Path, "/")
 
 	Log("path info :%s", pathInfo)
+
+	portal := r.Header.Get("portal")
+
+	if len(portal) <= 0 {
+		w.Write(KErrorPortalNotFound.toJson())
+		return
+	}
+
+	if len(_Cache.GetPortalUid(portal)) <= 0 {
+		w.Write(KErrorPortalInvalid.toJson())
+		return
+	}
 
 	if strings.Contains(r.URL.Path, "mediasession/create") {
 		message := _MediaAppServerClient.PostCreateSessionMessage()
@@ -191,6 +208,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(_Cache.GetPortalUid(portal)) <= 0 {
+		w.Write(KErrorPortalInvalid.toJson())
+		return
+	}
+
 	if _DBMgr.UserSotre().FindUser(user.Uid, portal) {
 		w.Write(KErrorUserExisted.toJson())
 
@@ -217,6 +239,7 @@ type UserController struct {
 }
 
 func (this *UserController) GetAllUsers(uid string, portal string) []*User {
+
 	users := _DBMgr.UserSotre().GetAllUsers(uid, portal)
 
 	for _, user := range users {
