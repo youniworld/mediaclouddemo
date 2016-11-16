@@ -20,7 +20,7 @@ import java.util.Map;
 
 class HttpClient{
 
-    public static String Post(String urlStr, Map<String,Object> body){
+    public static String Post(String urlStr, Map<String,Object> body, String portal){
         HttpURLConnection conn = null;
         OutputStream out = null;
         BufferedInputStream in = null;
@@ -32,7 +32,7 @@ class HttpClient{
 
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", ("application/json; charset=utf-8").replaceAll("\\s", ""));
-            conn.setRequestProperty("portal","bj.mediacloud.app");
+            conn.setRequestProperty("portal",portal);
 
             out = conn.getOutputStream();
 
@@ -105,7 +105,7 @@ class HttpClient{
         return null;
     }
 
-    public static String Get(String urlStr, Map<String,String> header){
+    public static String Get(String urlStr, Map<String,String> header, String portal){
         HttpURLConnection conn = null;
         OutputStream out = null;
         BufferedInputStream in = null;
@@ -117,7 +117,7 @@ class HttpClient{
 
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-Type", ("application/json; charset=utf-8").replaceAll("\\s", ""));
-            conn.setRequestProperty("portal","bj.mediacloud.app");
+            conn.setRequestProperty("portal",portal);
 
 
             if(header != null){

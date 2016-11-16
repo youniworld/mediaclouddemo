@@ -195,7 +195,7 @@ public class AppModel {
         body.put("uid",uid);
         body.put("pwd",pwd);
 
-        String jsonStr = HttpClient.Post("http://lianmaibiz.hifun.mobi:9800/register",body);
+        String jsonStr = HttpClient.Post("http://lianmaibiz.hifun.mobi:9800/register",body,portal);
 
         if (jsonStr == null){
             return ErrorCode.KErrorGeneral;
@@ -228,7 +228,7 @@ public class AppModel {
         Map<String,String> header = new HashMap<String, String>();
         header.put("token",get_LoginToken());
 
-        String jsonStr = HttpClient.Get("http://lianmaibiz.hifun.mobi:9800/user/all",header);
+        String jsonStr = HttpClient.Get("http://lianmaibiz.hifun.mobi:9800/user/all",header,getPortal());
 
         try {
             JSONObject jsonObject = new JSONObject(jsonStr);
@@ -276,7 +276,7 @@ public class AppModel {
         Map<String,String> header = new HashMap<String, String>();
         header.put("token",get_LoginToken());
 
-        String jsonStr = HttpClient.Get("http://lianmaibiz.hifun.mobi:9800/mediasession/create",header);
+        String jsonStr = HttpClient.Get("http://lianmaibiz.hifun.mobi:9800/mediasession/create",header,getPortal());
 
         if (jsonStr != null){
             try {
@@ -390,6 +390,9 @@ public class AppModel {
 
         _isLogout = true;
         _autoLogin = false;
+
+        _portal = null;
+
         pref.edit().putString("uid","").putString("pwd","").putString("portal","").commit();
     }
 
@@ -426,6 +429,10 @@ public class AppModel {
     }
 
     public String getPortal(){
+        if (!TextUtils.isEmpty(_portal)){
+            return _portal;
+        }
+
         SharedPreferences pref = _context.getSharedPreferences(STORE,Context.MODE_PRIVATE);
 
         return pref.getString("portal","");

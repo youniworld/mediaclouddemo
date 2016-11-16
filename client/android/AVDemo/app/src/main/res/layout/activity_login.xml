@@ -12,6 +12,15 @@
         android:orientation="vertical">
 
         <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Portal"
+            android:maxLines="1"
+            android:id="@+id/et_login_portal"
+            android:visibility="gone"
+            />
+
+        <EditText
             android:layout_marginTop="20dp"
             android:maxLines="1"
             android:layout_width="match_parent"
