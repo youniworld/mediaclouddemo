@@ -173,7 +173,9 @@ public class AppModel {
                 Intent incomingCall = new Intent(_context,ActivityIncomingCall.class);
                 incomingCall.putExtra("uid",intent.getStringExtra("uid"));
 
-                incomingCall.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                incomingCall.setAction(Intent.ACTION_MAIN);
+                incomingCall.addCategory(Intent.CATEGORY_LAUNCHER);
+                incomingCall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                 context.startActivity(incomingCall);
             }
