@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class FragmentP2P extends Fragment {
     private ListView _peopleList;
     private Handler _H = new Handler();
     private PeopleAdapter _adapter;
+    private SearchView _searchView;
     private ExecutorService _executor = Executors.newSingleThreadExecutor();
 
     private OnConnectionListener _connectionListener = new OnConnectionListener() {
@@ -115,6 +118,7 @@ public class FragmentP2P extends Fragment {
         _adapter = new PeopleAdapter(getActivity());
 
         _peopleList.setAdapter(_adapter);
+        //_peopleList.setTextFilterEnabled(true);
 
         _peopleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -128,6 +132,47 @@ public class FragmentP2P extends Fragment {
 
             }
         });
+
+        _searchView = (SearchView) getActivity().findViewById(R.id.sv_people_search);
+
+        _searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(!TextUtils.isEmpty(newText)){
+                    filter(newText);
+                }else{
+                    refresh();
+                }
+
+                return false;
+            }
+        });
+
+    }
+
+    void filter(String filterString){
+        final List<People> users = AppModel.getInstance().getAllUsers();
+
+        if (users.size() <= 0){
+            return;
+        }
+
+        List<People> filterList = new ArrayList<People>();
+
+        for(People pl : users){
+            if (pl.get_uid().contains(filterString)){
+                filterList.add(pl);
+            }
+        }
+
+        _adapter.refresh(filterList);
+
+        _adapter.notifyDataSetChanged();
 
     }
 

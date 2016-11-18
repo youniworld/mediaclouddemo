@@ -14,6 +14,15 @@
         android:textColor="@android:color/white"
         />
 
+    <SearchView
+        android:id="@+id/sv_people_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:iconifiedByDefault="true"
+        android:queryHint="input name"
+        >
+
+    </SearchView>
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

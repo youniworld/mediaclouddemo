@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.concurrent.ExecutorService;
 
@@ -98,7 +99,18 @@ public class ActivityDialCall extends ActivityCallBase {
                     }
                 }
 
-                finish();
+                if (state == MediaCallManager.CallState.EReject){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(me,"peer busy..",Toast.LENGTH_SHORT).show();
+
+                            finish();
+                        }
+                    });
+                }else{
+                    finish();
+                }
             }
         }
     };

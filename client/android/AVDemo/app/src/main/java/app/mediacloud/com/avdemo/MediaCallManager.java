@@ -89,7 +89,7 @@ public class MediaCallManager {
                         session.set_to(callMessage.get_caller());
 
                         try {
-                            session.hangupCall();
+                            session.terminateCall();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -359,6 +359,23 @@ abstract class MediaCallSessionBase{
         _state = MediaCallManager.CallState.EHangup;
 
         _callManager.noitfyStateChanged(_state);
+
+        _client.send(proto);
+    }
+
+    public void terminateCall() throws Exception{
+        MediaCallMessage callMessage = new MediaCallMessage();
+        callMessage.set_sessionId(_sessionId);
+        callMessage.set_caller(_caller);
+        callMessage.set_callee(_callee);
+        callMessage.set_portal(AppModel.getInstance().getPortal());
+        callMessage.set_callCmd(MediaCallMessage.CallCmd.ECallTerminate);
+        callMessage.set_reason(MediaCallMessage.CallHangupReason.ECallBusy);
+
+        CallProto proto = new CallProto();
+        proto.set_message(callMessage);
+        proto.set_from(_from);
+        proto.set_to(_to);
 
         _client.send(proto);
     }
