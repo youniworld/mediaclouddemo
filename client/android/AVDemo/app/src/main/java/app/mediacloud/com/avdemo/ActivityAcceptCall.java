@@ -67,10 +67,10 @@ public class ActivityAcceptCall extends ActivityCallBase{
 
 
         MediaView view = (MediaView) findViewById(R.id.mv_call_view);
-        MediaView preview = (MediaView) findViewById(R.id.mv_preview);
+        //MediaView preview = (MediaView) findViewById(R.id.mv_preview);
 
         view.bind(100);
-        preview.bind(101);
+        //preview.bind(101);
 
         _hpspUrl = "hpsp://"+_mediaSessionId;
         _url = String.format("%s:%s",_hpspUrl,AppModel.getInstance().getUid());
