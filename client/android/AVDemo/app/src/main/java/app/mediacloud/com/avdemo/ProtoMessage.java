@@ -245,6 +245,29 @@ class CallProto extends IMediaProtocol{
     }
 }
 
+class PingProto extends IMediaProtocol{
+
+    @Override
+    public void Unmarsal(Mediaappsingnal.MediaAppSignalMessage message) {
+        if(message.hasSignal()){
+            if (message.getSignal().hasPong()){
+                _packetId = message.getBase().getPacketId();
+            }
+        }
+    }
+
+    @Override
+    public byte[] Marsal() {
+        Mediaappsingnal.MediaAppSignalMessage.Builder builder = Mediaappsingnal.MediaAppSignalMessage.newBuilder();
+
+        builder.getBaseBuilder().setPacketId(_packetId);
+
+        builder.getSignalBuilder().getPingBuilder();
+
+        return builder.build().toByteArray();
+    }
+}
+
 class ProtocolParser{
     private static String TAG = "ProtocolParser";
 
@@ -320,6 +343,10 @@ class ProtocolParser{
 
                     protocols.add(resp);
 
+                } else if (message.getSignal().hasPong()){
+                    PingProto ping = new PingProto();
+                    ping.Unmarsal(message);
+                    protocols.add(ping);
                 }
             }else if(message.hasCall()){
                 CallProto call = new CallProto();
@@ -345,9 +372,9 @@ class ProtocolParser{
         buff[0] = (byte)0xFA;
         buff[1] = (byte)0xAF;
 
-        BigEdian.PutInt(buff,2,protoBuff.length);
+        BigEdian.PutInt(buff, 2, protoBuff.length);
 
-        System.arraycopy(protoBuff,0,buff,6,protoBuff.length);
+        System.arraycopy(protoBuff, 0, buff, 6, protoBuff.length);
 
         return buff;
     }

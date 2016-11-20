@@ -224,6 +224,37 @@ class TCPClient implements OnProtocolMessageListener{
         Disconnect();
     }
 
+    public boolean waitPong(long mills){
+        PingProto ping = new PingProto();
+
+
+        MessageInterceptor waitor = new MessageInterceptor(ping.get_packetId());
+        addInterceptor(waitor);
+
+        _messageQueue.offer(ping);
+        try{
+            waitor.waitMessage(mills);
+
+            if (waitor.getMessages() != null && waitor.getMessages().size() > 0){
+                IMediaProtocol msg = waitor.getMessages().get(0);
+
+                if (msg instanceof PingProto){
+                    return true;
+                }else {
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+
+        }finally {
+            removeInterceptor(waitor);
+        }
+    }
+
     public void notifyOnConnected(){
         _connectionExecutor.execute(new Runnable() {
             @Override

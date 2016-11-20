@@ -41,6 +41,7 @@ public class ActivityDialCall extends ActivityCallBase {
 
         MediaCallManager.getInstance().addStateListener(_callStateListener);
 
+        playMakeCallSounds();
         _callExecutor.execute(new Runnable() {
             @Override
             public void run() {

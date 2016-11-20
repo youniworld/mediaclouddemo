@@ -1,10 +1,13 @@
 package app.mediacloud.com.avdemo;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -47,6 +50,7 @@ public class AppModel {
     private ExecutorService _loginExecutor = Executors.newSingleThreadExecutor();
     private ExecutorService _connExecutor = Executors.newSingleThreadExecutor();
     private ExecutorService _messageRecvExecutor = Executors.newSingleThreadExecutor();
+    private ExecutorService _pingExecutor = Executors.newSingleThreadExecutor();
 
     private static AppModel instance = new AppModel();
     private static TCPClient _client = new TCPClient();
@@ -163,15 +167,15 @@ public class AppModel {
 
         _client.addMessageListener(_messageListener);
 
-        MediaCallManager.getInstance().init(context,_client);
+        MediaCallManager.getInstance().init(context, _client);
 
         LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(context);
 
         lbm.registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Intent incomingCall = new Intent(_context,ActivityIncomingCall.class);
-                incomingCall.putExtra("uid",intent.getStringExtra("uid"));
+                Intent incomingCall = new Intent(_context, ActivityIncomingCall.class);
+                incomingCall.putExtra("uid", intent.getStringExtra("uid"));
 
                 incomingCall.setAction(Intent.ACTION_MAIN);
                 incomingCall.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -179,7 +183,7 @@ public class AppModel {
 
                 context.startActivity(incomingCall);
             }
-        },new IntentFilter(MediaCallManager.INCOMING_CALL_ACTION));
+        }, new IntentFilter(MediaCallManager.INCOMING_CALL_ACTION));
 
         String pwd = AppModel.getInstance().getPwd();
 
@@ -195,9 +199,9 @@ public class AppModel {
         HashMap<String,Object> body = new HashMap<String, Object>();
 
         body.put("uid",uid);
-        body.put("pwd",pwd);
+        body.put("pwd", pwd);
 
-        String jsonStr = HttpClient.Post("http://lianmaibiz.hifun.mobi:9800/register",body,portal);
+        String jsonStr = HttpClient.Post("http://lianmaibiz.hifun.mobi:9800/register", body, portal);
 
         if (jsonStr == null){
             return ErrorCode.KErrorGeneral;
@@ -351,6 +355,8 @@ public class AppModel {
             _portal = portal;
 
             _autoLogin = true;
+
+            startPing();
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -369,7 +375,7 @@ public class AppModel {
             @Override
             public void run() {
                 try {
-                    SyncLogin(uid,pwd,portal);
+                    SyncLogin(uid, pwd, portal);
 
                     notifyConnected();
                 } catch (Exception e) {
@@ -405,7 +411,6 @@ public class AppModel {
     public String get_LoginToken() {
         return _token;
     }
-
 
     public void saveUser(String uid, String pwd, String portal){
         SharedPreferences pref = _context.getSharedPreferences(STORE,Context.MODE_PRIVATE);
@@ -524,23 +529,23 @@ public class AppModel {
         _loginExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                try{
+                try {
                     Thread.sleep(2000);
 
-                    if (_isLogout){
+                    if (_isLogout) {
                         return;
                     }
 
-                    if(!Utils.getInstance().hasConnection()){
+                    if (!Utils.getInstance().hasConnection()) {
                         Reconnect();
                         return;
                     }
 
-                    SyncLogin(_uid,_pwd,_portal);
+                    SyncLogin(_uid, _pwd, _portal);
 
                     notifyConnected();
-                }catch (Exception e){
-                    if (e instanceof InterruptedIOException){
+                } catch (Exception e) {
+                    if (e instanceof InterruptedIOException) {
                         return;
                     }
 
@@ -549,6 +554,73 @@ public class AppModel {
             }
         });
     }
+
+    private void startPing(){
+        if (_pendingIntent == null){
+            String action = _context.getPackageName() + ":ping";
+            Intent pingIntent = new Intent(action);
+            _pendingIntent = PendingIntent.getBroadcast(_context,0,pingIntent,0);
+            _context.registerReceiver(_pingReceiver,new IntentFilter(action));
+        }
+
+        AlarmManager alarmManager = (AlarmManager)_context.getSystemService(Context.ALARM_SERVICE);
+
+        long wakupTime = System.currentTimeMillis() + 3*60*1000;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP,wakupTime,_pendingIntent);
+        }else {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, wakupTime, _pendingIntent);
+        }
+    }
+
+    private void stopPing(){
+
+    }
+
+    private PingAlarmReceiver _pingReceiver = new PingAlarmReceiver();
+    private PendingIntent _pendingIntent;
+
+    private class PingAlarmReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(_isLogout){
+                return;
+            }
+
+            if (!_client.isLogined()){
+                return;
+            }
+
+            startPing();
+
+            _pingExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try{
+                        int cnt = 0;
+                        boolean ret = false;
+                        do{
+                            ret = _client.waitPong(20*1000);
+
+                            if(ret){
+                                Log.i("PING","ping successfully");
+                                break;
+                            }
+                        }while (cnt++ < 3);
+
+                        if (!ret){
+                            _client.Disconnect();
+                            Reconnect();
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    };
+
     private static String USER_PRIVATE_STORE(String uid){
         return uid + STORE;
     }
