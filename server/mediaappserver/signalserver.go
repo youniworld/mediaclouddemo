@@ -190,8 +190,9 @@ func (this *SessionHandler) OnLogout() {
 	}
 
 	_SessionMgr.UnSubscribeSessionChange(this)
-	_SessionMgr.PublishSessionChange(uint8(KStateOffline), this._session.uid)
-	_SessionMgr.DeleteSession(this._session.uid, this._session.portal)
+	if _SessionMgr.DeleteSession(this._session.uid, this._session.portal, this._session) {
+		_SessionMgr.PublishSessionChange(uint8(KStateOffline), this._session.uid)
+	}
 
 	this._SessionServer._HandlerMapLock.Lock()
 	delete(this._SessionServer._SessionHandlers, this._session)

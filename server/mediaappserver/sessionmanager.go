@@ -69,12 +69,26 @@ func (this *SessionManager) GetSession(uid string, portal string) *Session {
 	return session
 }
 
-func (this *SessionManager) DeleteSession(uid string, portal string) {
+func (this *SessionManager) DeleteSession(uid string, portal string, session *Session) bool {
 	this._sessionLock.Lock()
-	delete(this.Sessions, SESSIONKEY(uid, portal))
+
+	deleted := false
+
+	for _, ses := range this.Sessions {
+		if ses == session {
+			delete(this.Sessions, SESSIONKEY(uid, portal))
+			deleted = true
+			break
+		}
+	}
+
 	this._sessionLock.Unlock()
 
-	_DBMgr.SessionStore().DeleteSession(uid, portal)
+	if deleted {
+		_DBMgr.SessionStore().DeleteSession(uid, portal)
+	}
+
+	return deleted
 }
 
 func (this *SessionManager) SaveSession(session *Session) {
