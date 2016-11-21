@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,6 +125,17 @@ public class FragmentP2P extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 People people = (People) adapterView.getAdapter().getItem(i);
+
+                if(people.get_state() == People.State.EOffline){
+                    Toast.makeText(getActivity(),"the person you are calling is not online",Toast.LENGTH_SHORT).show();
+
+                    return;
+                }
+
+                if (people.get_uid().equals(AppModel.getInstance().getUid())){
+                    Toast.makeText(getActivity(),"you can't call yourself",Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 Intent intent = new Intent(getActivity(),ActivityDialCall.class);
                 intent.putExtra("to",people.get_uid());
