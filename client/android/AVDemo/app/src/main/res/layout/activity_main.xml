@@ -32,19 +32,19 @@
         android:orientation="horizontal"
         >
 
-        <RadioButton
-            android:id="@+id/rb_conf_call"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:text="conf call"
-            android:textSize="15sp"
+        <!--<RadioButton-->
+            <!--android:id="@+id/rb_conf_call"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:text="conf call"-->
+            <!--android:textSize="15sp"-->
 
-            android:button="@null"
-            android:gravity="center"
-            android:background="@android:color/holo_blue_light"
-            android:textColor="@color/main_tab_text_selector"
-            />
+            <!--android:button="@null"-->
+            <!--android:gravity="center"-->
+            <!--android:background="@android:color/holo_blue_light"-->
+            <!--android:textColor="@color/main_tab_text_selector"-->
+            <!--/>-->
 
         <RadioButton
             android:id="@+id/rb_p2p_call"

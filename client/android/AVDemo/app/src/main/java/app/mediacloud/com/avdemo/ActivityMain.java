@@ -59,8 +59,8 @@ public class ActivityMain extends FragmentActivity {
                 if(R.id.rb_p2p_call == id){
                     fragment = _p2pCall;
 
-                }else if (R.id.rb_conf_call == id){
-                    fragment = _confCall;
+//                }else if (R.id.rb_conf_call == id){
+//                    fragment = _confCall;
 
                 }else if (R.id.rb_setting == id){
                     fragment = _settings;

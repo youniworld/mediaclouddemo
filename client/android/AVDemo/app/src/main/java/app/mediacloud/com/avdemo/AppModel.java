@@ -328,6 +328,8 @@ public class AppModel {
                     if (callback != null){
                         callback.OnSuccess();
                     }
+
+                    startService();
                 } catch (Exception e) {
                     e.printStackTrace();
 
@@ -371,6 +373,8 @@ public class AppModel {
         _pwd = pwd;
         _portal = portal;
 
+        startService();
+
         _loginExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -402,6 +406,8 @@ public class AppModel {
         _portal = null;
 
         pref.edit().putString("uid","").putString("pwd","").putString("portal","").commit();
+
+        stopService();
     }
 
     public boolean isLoggined() {
@@ -545,7 +551,7 @@ public class AppModel {
 
                     notifyConnected();
                 } catch (Exception e) {
-                    if (e instanceof InterruptedIOException) {
+                    if (e instanceof InterruptedException) {
                         return;
                     }
 
@@ -576,6 +582,18 @@ public class AppModel {
 
     private void stopPing(){
 
+    }
+
+    private void startService(){
+        if (_context != null){
+            _context.startService(new Intent(_context,StartService.class));
+        }
+    }
+
+    private void stopService(){
+        if (_context != null){
+            _context.stopService(new Intent(_context,StartService.class));
+        }
     }
 
     private PingAlarmReceiver _pingReceiver = new PingAlarmReceiver();
@@ -610,6 +628,8 @@ public class AppModel {
                         }while (cnt++ < 3);
 
                         if (!ret){
+                            Log.w("PING","ping failed for 3 times and start to reconnect!");
+
                             _client.Disconnect();
                             Reconnect();
                         }
