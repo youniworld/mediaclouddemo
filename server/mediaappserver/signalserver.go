@@ -46,7 +46,7 @@ func (this *SessionServer) Start(bindaddr string) {
 
 		// set the keep alive interval
 		sessionHandler._conn.SetKeepAlive(true)
-		sessionHandler._conn.SetKeepAlivePeriod(time.Duration(300) * time.Second)
+		sessionHandler._conn.SetKeepAlivePeriod(time.Duration(40) * time.Second)
 
 		go sessionHandler.Start()
 	}
