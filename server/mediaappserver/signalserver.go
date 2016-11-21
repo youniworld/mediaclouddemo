@@ -92,6 +92,8 @@ func (this *SessionHandler) Start() {
 		for _, pr := range protos {
 			if pr != nil {
 
+				Log("RECV FROM UID : %s and Portal : %s", this._session.uid, this._session.portal)
+
 				if login, ok := pr.(*LoginProto); ok {
 					ok := _SessionMgr.CreatePortal(login._portal)
 
