@@ -268,6 +268,21 @@ class PingProto extends IMediaProtocol{
     }
 }
 
+class DisconnectProto extends IMediaProtocol{
+
+    public DisconnectProto(){}
+
+    @Override
+    public void Unmarsal(Mediaappsingnal.MediaAppSignalMessage message) {
+
+    }
+
+    @Override
+    public byte[] Marsal() {
+        return new byte[0];
+    }
+}
+
 class ProtocolParser{
     private static String TAG = "ProtocolParser";
 

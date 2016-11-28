@@ -445,6 +445,10 @@ class TCPClient implements OnProtocolMessageListener{
                         while (!_stopped){
                             IMediaProtocol proto = _messageQueue.take();
 
+                            if (proto instanceof DisconnectProto){
+                                return;
+                            }
+                            
                             if(proto == null){
                                 throw new Exception("the proto is null!");
                             }
@@ -477,7 +481,7 @@ class TCPClient implements OnProtocolMessageListener{
             _stopped = true;
 
             // tricky solution to stoping the _messageQueue waiting.
-            _messageQueue.offer(null);
+            _messageQueue.offer(new DisconnectProto());
         }
     }
 }
