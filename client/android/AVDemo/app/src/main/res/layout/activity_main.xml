@@ -50,26 +50,28 @@
             android:id="@+id/rb_p2p_call"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:text="p2p call"
+            android:layout_height="60dp"
+            android:text="Call"
             android:textSize="15sp"
             android:gravity="center"
             android:button="@null"
             android:background="@android:color/holo_blue_light"
             android:textColor="@color/main_tab_text_selector"
+            android:drawableTop="@android:drawable/ic_menu_call"
             />
 
         <RadioButton
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:text="settings"
+            android:layout_height="60dp"
+            android:text="Settings"
             android:button="@null"
             android:textSize="15sp"
             android:gravity="center"
             android:id="@+id/rb_setting"
             android:background="@android:color/holo_blue_light"
             android:textColor="@color/main_tab_text_selector"
+            android:drawableTop="@android:drawable/ic_menu_help"
             />
 
     </RadioGroup>
