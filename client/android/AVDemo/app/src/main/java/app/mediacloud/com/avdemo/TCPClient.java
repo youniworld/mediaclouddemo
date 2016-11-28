@@ -477,7 +477,7 @@ class TCPClient implements OnProtocolMessageListener{
             _stopped = true;
 
             // tricky solution to stoping the _messageQueue waiting.
-            //_messageQueue.offer(null);
+            _messageQueue.offer(null);
         }
     }
 }
