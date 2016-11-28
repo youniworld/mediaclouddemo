@@ -84,19 +84,25 @@ func (this *FileLogger) log(message string) {
 }
 
 func MessageHandler(logger *FileLogger) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+
 	for {
 		select {
 		case str := <-logger._ch:
 			fileName := logger._fileName
 			info, err := os.Stat(logger._fileName)
 
-			if err != nil {
+			if err == nil {
 				if info.Size() > 2*KSize1M {
 					fileName = fmt.Sprintf("%s_%s", fileName, time.Now().Format("2006-01-02 15:04:05"))
 
 					des := CreateIfNotExist(fileName)
 
-					if des != nil {
+					if des == nil {
 						src, err := os.OpenFile(logger._fileName, os.O_APPEND|os.O_RDWR, 0)
 
 						if err == nil {
