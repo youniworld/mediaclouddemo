@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:textSize="30sp"
         android:background="@android:color/holo_blue_light"
-        android:text="P2P Call"
+        android:text="Call"
         android:gravity="center"
         android:textColor="@android:color/white"
         />

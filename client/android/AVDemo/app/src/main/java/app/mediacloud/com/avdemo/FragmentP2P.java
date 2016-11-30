@@ -60,6 +60,7 @@ public class FragmentP2P extends Fragment {
                 return;
             }
 
+            boolean found = false;
             for (People people:users){
                 if(people.get_uid().equals(uid)){
                     people.set_state(state);
@@ -71,8 +72,13 @@ public class FragmentP2P extends Fragment {
                         }
                     });
 
+                    found = true;
                     break;
                 }
+            }
+
+            if (!found){
+                refresh();
             }
         }
     };
@@ -198,10 +204,23 @@ public class FragmentP2P extends Fragment {
         _executor.execute(new Runnable() {
             @Override
             public void run() {
-                List<People> peoples = AppModel.getInstance().getAllUsers();
+                if (!AppModel.getInstance().isLoggined()){
+                    return;
+                }
+
+                List<People> peoples = null; //= AppModel.getInstance().getAllUsers();
 
                 if (peoples == null || peoples.isEmpty()){
                     peoples = AppModel.getInstance().getAllUsersFromServer();
+                }
+
+                if (peoples == null){
+                    _H.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            refresh();
+                        }
+                    },2000);
                 }
 
                 final List<People> users = peoples;

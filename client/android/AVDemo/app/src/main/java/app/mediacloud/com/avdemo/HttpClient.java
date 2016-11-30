@@ -33,6 +33,8 @@ class HttpClient{
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", ("application/json; charset=utf-8").replaceAll("\\s", ""));
             conn.setRequestProperty("portal",portal);
+            conn.setConnectTimeout(20*1000);
+            conn.setReadTimeout(10*1000);
 
             out = conn.getOutputStream();
 
@@ -118,6 +120,8 @@ class HttpClient{
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-Type", ("application/json; charset=utf-8").replaceAll("\\s", ""));
             conn.setRequestProperty("portal",portal);
+            conn.setConnectTimeout(20*1000);
+            conn.setReadTimeout(10*1000);
 
 
             if(header != null){

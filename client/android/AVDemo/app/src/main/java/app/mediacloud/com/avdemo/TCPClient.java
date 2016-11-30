@@ -448,7 +448,7 @@ class TCPClient implements OnProtocolMessageListener{
                             if (proto instanceof DisconnectProto){
                                 return;
                             }
-                            
+
                             if(proto == null){
                                 throw new Exception("the proto is null!");
                             }

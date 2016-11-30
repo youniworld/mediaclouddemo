@@ -9,7 +9,7 @@ import android.net.NetworkInfo;
  */
 
 public class Utils {
-    public static String KDefault_Portal = "bj.mediacloud.app";
+    public static String KDefault_Portal = "yaobo.mediacloud.app";
 
     private static Utils _instance = new Utils();
     private Context _context;
