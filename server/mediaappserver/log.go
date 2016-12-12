@@ -64,7 +64,7 @@ var _fLogger = &FileLogger{}
 
 func (this *FileLogger) init(fileName string) error {
 	if this._init {
-		os.Remove(this._fileName)
+		//os.Remove(this._fileName)
 	}
 
 	this._ch = make(chan string)
@@ -102,7 +102,7 @@ func MessageHandler(logger *FileLogger) {
 
 					des := CreateIfNotExist(fileName)
 
-					if des == nil {
+					if des != nil {
 						src, err := os.OpenFile(logger._fileName, os.O_APPEND|os.O_RDWR, 0)
 
 						if err == nil {
@@ -121,6 +121,8 @@ func MessageHandler(logger *FileLogger) {
 
 				}
 			}
+
+			fileName = logger._fileName
 
 			in, err := os.OpenFile(fileName, os.O_APPEND|os.O_RDWR, 0)
 
