@@ -1,0 +1,25 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "75644647-8cbd-4e08-b584-e8cacd054db6++505",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "75644647-8cbd-4e08-b584-e8cacd054db6++505" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "75644647-8cbd-4e08-b584-e8cacd054db6++505" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "6C7D32A4-9C6A-4B54-ABAD-7CD187FA6D48",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "75644647-8cbd-4e08-b584-e8cacd054db6++505" : "live_video\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "demo",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "device\/demo\/iosdevice\/demo\/demo.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "svn:\/\/101.201.145.206\/live_video",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "75644647-8cbd-4e08-b584-e8cacd054db6++505"
+    }
+  ]
+}
