@@ -64,27 +64,8 @@ public class ActivityAcceptCall extends ActivityCallBase implements IRealTimeVid
                     e.printStackTrace();
                     finish();
                 }
-                /*new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            closeStream();
-                            MediaCallManager.getInstance().hangupCall();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-
-                            finish();
-                        }
-                    }
-                }).start();*/
             }
         });
-
-
-        //FrameLayout view = (FrameLayout) findViewById(R.id.mv_call_view);
-        //FrameLayout preview = (FrameLayout) findViewById(R.id.mv_preview);
-        //view.bind(100);
-        //preview.bind(101);
 
         try {
             _camera = MMCSDK.CreateRealTimeVideoCamera(getWindowManager().getDefaultDisplay(), null);
@@ -99,9 +80,8 @@ public class ActivityAcceptCall extends ActivityCallBase implements IRealTimeVid
             ex.printStackTrace();
         }
 
-        _hpspUrl = "hpsp://demo.biz.hpsp.hifun.mobi/" + _mediaSessionId;
+        _hpspUrl = "hpsp://if.biz.hpsp.hifun.mobi/" + _mediaSessionId;
         _uid = AppModel.getInstance().getUid();
-        //_url = String.format("%s:%s",_hpspUrl,AppModel.getInstance().getUid());
         openStream();
     }
 
@@ -151,18 +131,6 @@ public class ActivityAcceptCall extends ActivityCallBase implements IRealTimeVid
         catch (MMCException ex) {
             ex.printStackTrace();
         }
-
-        /*
-        _streamExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                MediaSdk.open(6, _url, 100, 101);
-
-                MediaSdk.setCameraFront(true);
-                MediaSdk.setPushRecord(true);
-                _steamClosed = false;
-            }
-        });*/
     }
 
     void closeStream(){
@@ -180,19 +148,6 @@ public class ActivityAcceptCall extends ActivityCallBase implements IRealTimeVid
         }
 
         _steamClosed = true;
-
-        /*
-        _streamExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (_steamClosed){
-                    return;
-                }
-
-                MediaSdk.close(_hpspUrl);
-                _steamClosed = true;
-            }
-        });*/
     }
 
     @Override
