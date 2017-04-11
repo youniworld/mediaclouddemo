@@ -88,7 +88,8 @@ public class ActivityIncomingCall extends ActivityCallBase {
         _audioManager.setMode(AudioManager.MODE_RINGTONE);
         _audioManager.setSpeakerphoneOn(true);
         _ringtone = RingtoneManager.getRingtone(this, ringUri);
-        _ringtone.play();
+        if (_ringtone != null) {
+            _ringtone.play();
+        }
     }
-
 }

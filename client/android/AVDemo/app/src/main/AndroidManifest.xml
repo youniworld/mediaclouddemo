@@ -44,7 +44,6 @@
             android:launchMode="singleTask"
             >
         </activity>
-        <activity android:name=".ActivityMedia"/>
 
         <activity android:name=".ActivityAcceptCall"/>
         <activity android:name=".ActivityIncomingCall"/>

@@ -5,10 +5,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.vlee78.android.media.MediaSdk;
-import com.vlee78.android.media.MediaView;
+import com.mmc.android.sdk.IRealTimeVideo;
+import com.mmc.android.sdk.IRealTimeVideoCamera;
+import com.mmc.android.sdk.MMCException;
+import com.mmc.android.sdk.MMCSDK;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,12 +20,17 @@ import java.util.concurrent.Executors;
  * Created by youni on 2016/11/9.
  */
 
-public class ActivityAcceptCall extends ActivityCallBase{
+public class ActivityAcceptCall extends ActivityCallBase implements IRealTimeVideo.IListener {
     private String _mediaSessionId;
     private String _url;
+    private String _uid;
     private String _hpspUrl;
     private boolean _steamClosed = true;
-    private ExecutorService _streamExecutor = Executors.newSingleThreadExecutor();
+
+    private IRealTimeVideoCamera _camera;
+    private IRealTimeVideo _rtVideo;
+    private View _callView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +57,14 @@ public class ActivityAcceptCall extends ActivityCallBase{
         hangup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new Thread(new Runnable() {
+                try {
+                    closeStream();
+                    MediaCallManager.getInstance().hangupCall();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    finish();
+                }
+                /*new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -61,20 +76,32 @@ public class ActivityAcceptCall extends ActivityCallBase{
                             finish();
                         }
                     }
-                }).start();
+                }).start();*/
             }
         });
 
 
-        MediaView view = (MediaView) findViewById(R.id.mv_call_view);
-        MediaView preview = (MediaView) findViewById(R.id.mv_preview);
+        //FrameLayout view = (FrameLayout) findViewById(R.id.mv_call_view);
+        //FrameLayout preview = (FrameLayout) findViewById(R.id.mv_preview);
+        //view.bind(100);
+        //preview.bind(101);
 
-        view.bind(100);
-        preview.bind(101);
+        try {
+            _camera = MMCSDK.CreateRealTimeVideoCamera(getWindowManager().getDefaultDisplay(), null);
+            _camera.Start();
 
-        _hpspUrl = "hpsp://"+_mediaSessionId;
-        _url = String.format("%s:%s",_hpspUrl,AppModel.getInstance().getUid());
+            FrameLayout frmlayout = (FrameLayout)findViewById(R.id.mv_preview);
+            FrameLayout.LayoutParams fparam = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+            frmlayout.addView(_camera.GetPreviewView(), fparam);
+        }
+        catch (MMCException ex) {
+            ex.printStackTrace();
+        }
 
+        _hpspUrl = "hpsp://demo.biz.hpsp.hifun.mobi/" + _mediaSessionId;
+        _uid = AppModel.getInstance().getUid();
+        //_url = String.format("%s:%s",_hpspUrl,AppModel.getInstance().getUid());
         openStream();
     }
 
@@ -91,11 +118,41 @@ public class ActivityAcceptCall extends ActivityCallBase{
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        try {
+            if (_camera != null) {
+                _camera.Stop();
+            }
+
+            if (_rtVideo != null) {
+                _rtVideo.Stop();
+            }
+        }
+        catch (MMCException ex) {
+            ex.printStackTrace();
+        }
 
         MediaCallManager.getInstance().removeStateListener(_stateChangeListener);
     }
 
-    void openStream(){
+    void openStream() {
+        try {
+            _rtVideo = MMCSDK.CreateRealTimeVideo(this);
+            _rtVideo.ConnectCamera((IRealTimeVideo.ICameraConnector)_camera);
+
+            _callView = _rtVideo.CreateVideoPlaybackView();
+            FrameLayout callView = (FrameLayout) findViewById(R.id.mv_call_view);
+            FrameLayout.LayoutParams fparam = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+            callView.addView(_callView, fparam);
+
+            _rtVideo.Start(_hpspUrl, _uid);
+            _steamClosed = false;
+        }
+        catch (MMCException ex) {
+            ex.printStackTrace();
+        }
+
+        /*
         _streamExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -105,7 +162,7 @@ public class ActivityAcceptCall extends ActivityCallBase{
                 MediaSdk.setPushRecord(true);
                 _steamClosed = false;
             }
-        });
+        });*/
     }
 
     void closeStream(){
@@ -113,6 +170,18 @@ public class ActivityAcceptCall extends ActivityCallBase{
             return;
         }
 
+        try {
+            if (_rtVideo != null) {
+                _rtVideo.Stop();
+            }
+        }
+        catch (MMCException ex) {
+            ex.printStackTrace();
+        }
+
+        _steamClosed = true;
+
+        /*
         _streamExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -123,6 +192,23 @@ public class ActivityAcceptCall extends ActivityCallBase{
                 MediaSdk.close(_hpspUrl);
                 _steamClosed = true;
             }
-        });
+        });*/
+    }
+
+    @Override
+    public void HandleRealTimeVideoPeerStatus(IRealTimeVideo.PeerStatus peerStatus, String s) {
+        if (peerStatus == IRealTimeVideo.PeerStatus.Alive) {
+            try {
+                _rtVideo.AssociatePeerWithVideoPlaybackView(_callView, s);
+            }
+            catch (MMCException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void HandleRealTimeVideoNetworkStatus(IRealTimeVideo.NetworkStatus networkStatus) {
+
     }
 }

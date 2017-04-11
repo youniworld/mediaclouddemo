@@ -25,6 +25,12 @@ android {
     }
 }
 
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     //    androidTestCompile('com.android.support.test.espresso:espresso-core:2.0', {
@@ -33,6 +39,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java
     compile group: 'com.google.protobuf', name: 'protobuf-java', version: '2.5.0'
     compile 'com.android.support:support-v4:20.0.0'
-    compile files('libs/mediasdk.jar')
+    //compile files('libs/mediasdk.jar')
+    compile(name: 'mmcsdk-debug', ext: 'aar')
     testCompile 'junit:junit:4.12'
 }
